@@ -5,7 +5,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -13,10 +12,22 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Footer from "../elements/Footer";
+import {useState} from "react";
+import {useNavigate} from "react-router-dom";
 
 const theme = createTheme();
 
 export default function SignUp() {
+
+    const navigate = useNavigate();
+
+    const [data, setData] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: ''
+    });
+
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -25,6 +36,14 @@ export default function SignUp() {
             password: data.get('password'),
         });
     };
+
+    const onChangeHandler = (event) => {
+        setData({ ...data, [event.target.name]: event.target.value });
+    };
+
+    function clickLogin() {
+        navigate("/", {replace:true})
+    }
 
     return (
         <ThemeProvider theme={theme}>
@@ -54,6 +73,8 @@ export default function SignUp() {
                                     fullWidth
                                     id="firstName"
                                     label="First Name"
+                                    value={data.firstName}
+                                    onChange={onChangeHandler}
                                     autoFocus
                                 />
                             </Grid>
@@ -64,7 +85,9 @@ export default function SignUp() {
                                     id="lastName"
                                     label="Last Name"
                                     name="lastName"
+                                    value={data.lastName}
                                     autoComplete="family-name"
+                                    onChange={onChangeHandler}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -74,7 +97,9 @@ export default function SignUp() {
                                     id="email"
                                     label="Email Address"
                                     name="email"
+                                    value={data.email}
                                     autoComplete="email"
+                                    onChange={onChangeHandler}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -85,7 +110,9 @@ export default function SignUp() {
                                     label="Password"
                                     type="password"
                                     id="password"
+                                    value={data.password}
                                     autoComplete="new-password"
+                                    onChange={onChangeHandler}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -105,9 +132,9 @@ export default function SignUp() {
                         </Button>
                         <Grid container justifyContent="flex-end">
                             <Grid item>
-                                <Link href="#" variant="body2">
+                                <Button onClick={()=> clickLogin()} variant="body2">
                                     Already have an account? Sign in
-                                </Link>
+                                </Button>
                             </Grid>
                         </Grid>
                     </Box>

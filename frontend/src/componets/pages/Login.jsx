@@ -14,35 +14,55 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Footer from "../elements/Footer";
 import {useState} from "react";
+import {useNavigate} from "react-router-dom";
 
 const theme = createTheme();
 
 export default function Login() {
+
+    const navigate = useNavigate();
+
+    const [emailValid, setEmailValid] = useState(false);
+    const [emailHelper, setEmailHelper] = useState("");
+    const [passValid, setPassValid] = useState(false);
+    const [passHelper, setPassHelper] = useState("");
 
     const [data, setData] = useState({
         email: '',
         password: ''
     });
 
+    const validateContent = (emailV, passV, emailH, passH) => {
+        setEmailValid(emailV)
+        setPassValid(passV)
+        setEmailHelper(emailH)
+        setPassHelper(passH)
+    }
+
     const handleSubmit = (event) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
+
+        if (!data.email && !data.password) {
+            validateContent(true, true, "Please enter email", "Please enter password")
+        } else {
+
+            validateContent(false, false, "", "")
+
+            const data = new FormData(event.currentTarget);
+            console.log({
+                email: data.get('email'),
+                password: data.get('password'),
+            });
+
+        }
     };
 
     function clickSignup() {
-        alert("email : "+ data.email);
+        navigate("/sign", {replace:true})
     }
 
-    const onChangeHandler = (e) => {
-        const {name, value} = e.target;
-
-        setData({
-            [name]: value,
-        });
+    const onChangeHandler = (event) => {
+        setData({ ...data, [event.target.name]: event.target.value });
     };
 
     return (
@@ -81,26 +101,32 @@ export default function Login() {
                         </Typography>
                         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
                             <TextField
+                                error={emailValid}
                                 margin="normal"
                                 required
                                 fullWidth
                                 id="email"
                                 label="Email Address"
                                 name="email"
+                                value={data.email}
                                 autoComplete="email"
                                 autoFocus
                                 onChange={onChangeHandler}
+                                helperText={emailHelper}
                             />
                             <TextField
+                                error={passValid}
                                 margin="normal"
                                 required
                                 fullWidth
                                 name="password"
+                                value={data.password}
                                 label="Password"
                                 type="password"
                                 id="password"
                                 autoComplete="current-password"
                                 onChange={onChangeHandler}
+                                helperText={passHelper}
                             />
                             <FormControlLabel
                                 control={<Checkbox value="remember" color="primary" />}
