@@ -1,0 +1,35 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "3.0",
+    "title": "React To-Do App",
+    "description": "To-Do App REST API",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "host": "localhost:5000",
+  "basePath": "/api",
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/user": {
+      "get": {
+        "description": "Returns all users",
+        "responses": {
+          "200": {
+            "description": "A list of users."
+          }
+        }
+      }
+    }
+  }
+}
