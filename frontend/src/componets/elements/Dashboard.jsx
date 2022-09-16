@@ -21,7 +21,7 @@ import ListItemText from "@mui/material/ListItemText";
 import LogoutIcon from "@mui/icons-material/Logout";
 import {Route, Routes, useNavigate} from "react-router-dom";
 import {useEffect} from "react";
-import Tasks from "../pages/Tasks";
+import Tasks from "./Tasks";
 import Login from "../pages/Login";
 import SignUp from "../pages/SignUp";
 import AddTask from "./AddTask";
@@ -84,7 +84,11 @@ export default function Dashboard(props) {
     const navigate = useNavigate();
 
     useEffect(() => {
-
+        if (!localStorage.getItem('token')) {
+            navigate('/', {replace: true})
+        } else {
+            setFullName(localStorage.getItem('user_full_name'));
+        }
     }, [])
 
     const handleHome = () => {
@@ -93,7 +97,9 @@ export default function Dashboard(props) {
 
     const handleLogout = () => {
 
-        // TODO: add logout function
+        localStorage.removeItem('token');
+        localStorage.removeItem('user_id');
+        localStorage.removeItem('user_full_name');
 
         setTimeout(() => {
             navigate('/', {replace: true})

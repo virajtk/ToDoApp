@@ -9,6 +9,9 @@ const login = async (req, res) => {
         // Authentication
         let user = await UserModel.findOne({ email: req.body.email });
 
+        console.log(req.body.email);
+        console.log(req.body.password);
+
         if (user && bcrypt.compareSync(req.body.password, user.password)) {
 
             const authUser = { id : user._id }

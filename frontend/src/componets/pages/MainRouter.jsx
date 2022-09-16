@@ -2,7 +2,7 @@ import React from 'react';
 import Login from "./Login";
 import SignUp from "./SignUp";
 import {Route, Routes} from 'react-router-dom';
-import Tasks from "./Tasks";
+import Tasks from "../elements/Tasks";
 import Dashboard from "../elements/Dashboard";
 import AddTask from "../elements/AddTask";
 

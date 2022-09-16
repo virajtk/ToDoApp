@@ -10,10 +10,14 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import {createTheme, ThemeProvider} from '@mui/material/styles';
 import Footer from "../elements/Footer";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
+import axios from "axios";
+import {baseAPI} from "../../configs/configs";
+import {Alert, Snackbar} from "@mui/material";
+import {useEffect} from "@types/react";
 
 const theme = createTheme();
 
@@ -28,27 +32,66 @@ export default function SignUp() {
         password: ''
     });
 
+    // Toast configs
+    const [state, setState] = React.useState({
+        open: false,
+        vertical: 'top',
+        horizontal: 'right',
+        severity: 'success',
+        toastMsg: ''
+    });
+    const {vertical, horizontal, open, severity, toastMsg} = state;
+    const handleCloseSnack = () => {
+        setState({...state, open: false});
+    };
+
+    useEffect(() => {
+        if (localStorage.getItem('token')) {
+            navigate('/home', {replace: true})
+        }
+    }, []);
+
     const handleSubmit = (event) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
+
+        axios({
+            method: 'post',
+            url: baseAPI + '/user',
+            data: {
+                full_name: data.firstName + ' ' + data.lastName,
+                email: data.email,
+                password: data.password
+            }
+        })
+            .then(function (response) {
+                const {data} = response;
+                if (data) {
+                    setState({...state, open: true, severity: 'success', toastMsg: 'User added successfully'});
+
+                    setTimeout(() => {
+                        navigate('/', {replace: true})
+                    }, 2000);
+                } else {
+                    setState({...state, open: true, severity: 'warning', toastMsg: 'Something went wrong!'})
+                }
+            })
+            .catch(function () {
+                setState({...state, open: true, severity: 'warning', toastMsg: 'Something went wrong!'})
+            });
     };
 
     const onChangeHandler = (event) => {
-        setData({ ...data, [event.target.name]: event.target.value });
+        setData({...data, [event.target.name]: event.target.value});
     };
 
     function clickLogin() {
-        navigate("/", {replace:true})
+        navigate("/", {replace: true})
     }
 
     return (
         <ThemeProvider theme={theme}>
             <Container component="main" maxWidth="xs">
-                <CssBaseline />
+                <CssBaseline/>
                 <Box
                     sx={{
                         marginTop: 8,
@@ -57,13 +100,13 @@ export default function SignUp() {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                        <LockOutlinedIcon />
+                    <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
+                        <LockOutlinedIcon/>
                     </Avatar>
                     <Typography component="h1" variant="h5">
                         Sign up
                     </Typography>
-                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{mt: 3}}>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
                                 <TextField
@@ -117,7 +160,7 @@ export default function SignUp() {
                             </Grid>
                             <Grid item xs={12}>
                                 <FormControlLabel
-                                    control={<Checkbox value="allowExtraEmails" color="primary" />}
+                                    control={<Checkbox value="allowExtraEmails" color="primary"/>}
                                     label="I want to receive inspiration, marketing promotions and updates via email."
                                 />
                             </Grid>
@@ -126,20 +169,29 @@ export default function SignUp() {
                             type="submit"
                             fullWidth
                             variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
+                            sx={{mt: 3, mb: 2}}
                         >
                             Sign Up
                         </Button>
                         <Grid container justifyContent="flex-end">
                             <Grid item>
-                                <Button onClick={()=> clickLogin()} variant="body2">
+                                <Button onClick={() => clickLogin()} variant="body2">
                                     Already have an account? Sign in
                                 </Button>
                             </Grid>
                         </Grid>
                     </Box>
+
+                    {/*Toast Tag*/}
+                    <Snackbar open={open} autoHideDuration={2000} onClose={handleCloseSnack}
+                              anchorOrigin={{vertical, horizontal}} key={vertical + horizontal}>
+                        <Alert onClose={handleCloseSnack} severity={severity} sx={{width: '100%'}}>
+                            {toastMsg}
+                        </Alert>
+                    </Snackbar>
+
                 </Box>
-                <Footer />
+                <Footer/>
             </Container>
         </ThemeProvider>
     );

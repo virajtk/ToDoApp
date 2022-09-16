@@ -4,10 +4,11 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
-import Title from "../elements/Title";
+import Title from "./Title";
 import {useEffect, useState} from "react";
-import Loading from "../elements/Loading";
+import Loading from "./Loading";
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import {
     Button,
     Dialog,
@@ -22,6 +23,10 @@ import MuiAlert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import {useNavigate} from "react-router-dom";
+import {useDispatch} from "react-redux";
+import axios from "axios";
+import {baseAPI} from "../../configs/configs";
+import {setTask} from "../../redux/taskSlice";
 
 
 // Toast config
@@ -55,6 +60,9 @@ export default function Tasks() {
         setState({...state, open: false});
     };
 
+    // redux configs
+    const dispatch = useDispatch();
+
     // Confirmation Dialog configs
     const [openDelConfirmation, setOpenDelConfirmation] = React.useState(false);
     const options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
@@ -65,7 +73,16 @@ export default function Tasks() {
     }, [])
 
     const getTasksList = () => {
-
+        axios({
+            method: 'get',
+            url: baseAPI + '/task',
+            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        })
+            .then(function (response) {
+                const {data} = response;
+                setTasks(data.data);
+                setIsLoaded(true);
+            })
     }
 
     const deleteHandler = (task) => {
@@ -73,6 +90,12 @@ export default function Tasks() {
     }
     const deleteTask = (task) => {
 
+    }
+
+    const updateTask = (task) => {
+        dispatch(setTask( {
+            activeTask: task
+        }))
     }
 
     function addTask() {
@@ -139,6 +162,8 @@ export default function Tasks() {
                             <TableCell align="center">{task.desc}</TableCell>
                             <TableCell
                                 align="center">{new Date(task.created_at).toLocaleDateString("en-US", options)}</TableCell>
+                            <TableCell align="center"><Button
+                                onClick={() => updateTask(task)}><EditIcon/></Button></TableCell>
                             <TableCell align="center"><Button
                                 onClick={() => deleteHandler(task)}><DeleteIcon/></Button></TableCell>
                         </TableRow>
